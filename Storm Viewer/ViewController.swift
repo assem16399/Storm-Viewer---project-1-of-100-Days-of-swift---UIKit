@@ -7,13 +7,57 @@
 
 import UIKit
 
-class ViewController: UIViewController {
+class ViewController: UITableViewController {
 
+    var pics = [String]()
+    
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         // Do any additional setup after loading the view.
+        filterPicsByNSLL(in: getLoadedPics())
+
+        navigationController?.navigationBar.prefersLargeTitles = true
     }
+    
+    func getLoadedPics()->[String]{
+        let fileManger = FileManager.default
+        let path = Bundle.main.resourcePath!
+        return try! fileManger.contentsOfDirectory(atPath: path)
+    }
+    
+    func filterPicsByNSLL(in loadedPics:[String]) {
+        for pic in loadedPics {
+            if pic.hasPrefix("nssl") {
+                self.pics.append(pic)
+            }
+        }
+        pics.sort()
+       }
+    
+    
+    override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+        return pics.count
+    }
+    
+    override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+        let currentCell = tableView.dequeueReusableCell(withIdentifier: "Picture",for: indexPath)
+        var cellContentConfig = currentCell.defaultContentConfiguration()
+        cellContentConfig.text = pics[indexPath.row]
+        currentCell.contentConfiguration = cellContentConfig
+        return currentCell
+    }
+    
+    override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        if let detailViewController=storyboard?.instantiateViewController(withIdentifier: "Detail") as? DetailViewController{
+            detailViewController.selectedImage = pics[indexPath.row]
+            detailViewController.selectedImageIndex = indexPath.row + 1
+            detailViewController.imagesCount = pics.count
+            navigationController?.pushViewController(detailViewController, animated: true)
 
-
+        }
+    }
+    
+   
 }
 
