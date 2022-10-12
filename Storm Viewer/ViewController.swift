@@ -12,12 +12,25 @@ class ViewController: UITableViewController {
     var pics = [String]()
     
     
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         // Do any additional setup after loading the view.
         filterPicsByNSLL(in: getLoadedPics())
-
+        configureNaviagtionBar()
+    }
+    
+    
+    private func configureNaviagtionBar()  {
         navigationController?.navigationBar.prefersLargeTitles = true
+        navigationItem.rightBarButtonItem = UIBarButtonItem(barButtonSystemItem: .action, target: self, action: #selector(onButtonTapped))
+    }
+    
+    @objc func onButtonTapped(){
+        let sharedItems: [Any] = ["Hello, my friend I am recommending my app for you.", URL(string: "https://github.com/assem16399/Storm-Viewer-project-1-of-100-Days-of-swift---UIKit") ?? ""]
+        let vc = UIActivityViewController(activityItems: sharedItems, applicationActivities: [])
+        vc.popoverPresentationController?.barButtonItem = navigationItem.rightBarButtonItem
+        present(vc, animated: true)
     }
     
     func getLoadedPics()->[String]{
@@ -54,7 +67,6 @@ class ViewController: UITableViewController {
             detailViewController.selectedImageIndex = indexPath.row + 1
             detailViewController.imagesCount = pics.count
             navigationController?.pushViewController(detailViewController, animated: true)
-
         }
     }
     
