@@ -20,10 +20,25 @@ class DetailViewController: UIViewController {
         title = "Image \(selectedImageIndex ?? 0) of \(imagesCount ?? 10)"
     
         navigationItem.largeTitleDisplayMode = .never
+        
+        navigationItem.rightBarButtonItem = UIBarButtonItem(barButtonSystemItem: .action, target: self, action: #selector(onButtonTapped))
+        
+        
         myImageView.image = UIImage(named: selectedImage)
         // Do any additional setup after loading the view.
     }
     
+    @objc func onButtonTapped(){
+        
+        guard let image = myImageView.image?.jpegData(compressionQuality: 0.8) else {
+                print("No image found")
+                return
+        }
+        let vc = UIActivityViewController(activityItems: [image], applicationActivities: [])
+        vc.popoverPresentationController?.barButtonItem = navigationItem.rightBarButtonItem
+        present(vc, animated: true)
+    
+    }
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         navigationController?.hidesBarsOnTap = true
@@ -33,6 +48,8 @@ class DetailViewController: UIViewController {
         super.viewWillDisappear(animated)
         navigationController?.hidesBarsOnTap = false
     }
+    
+    
     
 
     /*
