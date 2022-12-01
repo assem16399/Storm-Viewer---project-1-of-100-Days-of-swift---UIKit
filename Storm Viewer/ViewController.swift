@@ -11,13 +11,11 @@ class ViewController: UITableViewController {
 
     var pics = [String]()
     
-    
-    
     override func viewDidLoad() {
         super.viewDidLoad()
         // Do any additional setup after loading the view.
-        filterPicsByNSLL(in: getLoadedPics())
         configureNaviagtionBar()
+        performSelector(inBackground: #selector(loadStormsData), with: nil)
     }
     
     
@@ -26,11 +24,16 @@ class ViewController: UITableViewController {
         navigationItem.rightBarButtonItem = UIBarButtonItem(barButtonSystemItem: .action, target: self, action: #selector(onButtonTapped))
     }
     
+    @objc func loadStormsData() {
+        filterPicsByNSLL(in: getLoadedPics())
+    }
+    
     @objc func onButtonTapped(){
         let sharedItems: [Any] = ["Hello, my friend I am recommending my app for you.", URL(string: "https://github.com/assem16399/Storm-Viewer-project-1-of-100-Days-of-swift---UIKit") ?? ""]
         let vc = UIActivityViewController(activityItems: sharedItems, applicationActivities: [])
         vc.popoverPresentationController?.barButtonItem = navigationItem.rightBarButtonItem
         present(vc, animated: true)
+        
     }
     
     func getLoadedPics()->[String]{
@@ -39,15 +42,20 @@ class ViewController: UITableViewController {
         return try! fileManger.contentsOfDirectory(atPath: path)
     }
     
-    func filterPicsByNSLL(in loadedPics:[String]) {
+     func filterPicsByNSLL(in loadedPics:[String]) {
         for pic in loadedPics {
             if pic.hasPrefix("nssl") {
                 self.pics.append(pic)
             }
         }
         pics.sort()
+        performSelector(onMainThread: #selector(reloadTableViewData), with: nil, waitUntilDone: false)
        }
     
+
+    @objc func reloadTableViewData() {
+        tableView.reloadData()
+    }
     
     override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         return pics.count
